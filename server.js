@@ -1,27 +1,30 @@
-const express = require('express');
+const express = require("express");
+require("dotenv").config();
+const port = process.env.PORT || 3000;
+const hostname = process.env.HOSTNAME || "localhost";
 const server = express();
 
-server.get('/item',(req,res) => {
-   res.send("items list");
+
+server.use(express.json());
+
+const groupsRouter = require("./modules/groups/routes/group-routes");
+const groceriesRouter = require("./modules/groceries/routes/groceries-routes");
+const usersRouter = require("./modules/users/routes/user-routes");
+
+server.use(groceriesRouter);
+server.use(usersRouter);
+server.use(groupsRouter);
+
+server.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal Server Error" });
 });
 
-server.get('/item/:id',(req,res) => {
-   res.send("item id is " + req.params.id);
-})
-
-server.post('/item',(req,res) =>{
-    res.send("item added");
+server.use((req, res) => {
+  res.status(404).send(`404! ${req.method} ${req.path} Not Found.`);
 });
 
-server.put('/item/:id',(req,res) =>{
-    res.send("item id  updated");
+server.listen(port, hostname, (error) => {
+  if (error) console.log(error.message);
+  else console.log(`Server running on http://${hostname}:${port}`);
 });
-
-server.delete('/item/:id',(req,res) =>{
-    res.send("item id  deleted");
-});
-
-server.listen(3000, () => {
-    console.log("server is running at http://localhost:3000")
-})
-
