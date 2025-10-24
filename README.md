@@ -20,9 +20,21 @@ purchase tracking - mark item as bought to monitor who bought what.
 collaborative - helps groups coordinate groceries efficiently.
 
 ## installation
+1) Clone the repository
+    git clone https://github.com/Ratika1004/project1.git
+
+2) cd grocerygo
+
+3) Install dependencies
+    npm install
+
+4) npm start
+
 
 ## technologies
-
+Validation	express-validator
+Data Storage	JSON files (temporary data source)
+Backend Framework Node.js, Express.js
 ## project structure 
 grocerygo--
 |-data/
@@ -49,15 +61,10 @@ grocerygo--
 
 
 ## future enchancements
+Integrate a database (MongoDB or PostgreSQL).
+Add authentication and user sessions.
 
-## Installation
 
-1) Clone the repository
-    git clone 
 
-2) cd grocerygo
-
-3) Install dependencies
-    npm install
 
 
