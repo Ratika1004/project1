@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Ratika",
+    "email": "ratika@mail.com",
+    "groupId": 1
+  },
+  {
+    "id": 2,
+    "name": "Liam",
+    "email": "liam@mail.com",
+    "groupId": 1
+  },
+  {
+    "id": 3,
+    "name": "Aditi",
+    "email": "aditi@example.com",
+    "groupId": 1
+  },
+  {
+    "id": 4,
+    "name": "Maya Sharma",
+    "email": "maya.sharma@example.com",
+    "groupId": 1
+  }
+]

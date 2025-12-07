@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Milk",
+    "quantity": 2,
+    "addedBy": 1,
+    "groupId": 1,
+    "isBought": false
+  },
+  {
+    "id": 2,
+    "name": "Eggs",
+    "quantity": 12,
+    "addedBy": 2,
+    "groupId": 1,
+    "isBought": true
+  },
+  {
+    "id": 3,
+    "name": "Bread",
+    "quantity": 1,
+    "addedBy": 2,
+    "groupId": 1,
+    "isBought": false
+  }
+]
