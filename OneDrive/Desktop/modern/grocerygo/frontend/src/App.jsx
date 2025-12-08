@@ -1,22 +1,53 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import GroceryList from "./components/GroceryList";
-import AddGroceryPage from "./components/AddGroceryPage";
-import UpdateGroceryPage from "./components/UpdateGroceryPage";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import Login from "./modules/auth/Login";
+import Register from "./modules/auth/Register";
+import VerifyOtp from "./modules/auth/VerifyOtp";
+
+import DashboardPage from "./modules/dashboard/DashboardPage";
+import GroupsPage from "./modules/groups/GroupsPage";
+import GroupPage from "./modules/groups/GroupPage";
+
+import ProtectedRoute from "./modules/shared/ProtectedRoute";
 
 function App() {
   return (
-    <BrowserRouter>
-      <nav style={{ display: "flex", gap: "20px", margin: "20px" }}>
-        <Link to="/">Grocery List</Link>
-        <Link to="/add">Add Grocery</Link>
-      </nav>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
-      <Routes>
-        <Route path="/" element={<GroceryList />} />
-        <Route path="/add" element={<AddGroceryPage />} />
-        <Route path="/update/:id" element={<UpdateGroceryPage />} />
-      </Routes>
-    </BrowserRouter>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/verify-otp" element={<VerifyOtp />} />
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/groups"
+        element={
+          <ProtectedRoute>
+            <GroupsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/groups/:id"
+        element={
+          <ProtectedRoute>
+            <GroupPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route path="*" element={<div style={{ padding: 20 }}>404 — Not found</div>} />
+    </Routes>
   );
 }
 

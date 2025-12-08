@@ -1,0 +1,3 @@
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #efefef;margin-bottom:14px;}
+.group-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:12px;}
+.card .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}

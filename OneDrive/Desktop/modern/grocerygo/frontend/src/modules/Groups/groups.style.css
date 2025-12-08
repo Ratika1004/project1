@@ -1,0 +1,2 @@
+.group-actions{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.group-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;border:1px solid #f1f1f1;}

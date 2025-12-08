@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const GroupModel = require("../models/group-model");
+const UserModel = require("../../users/models/user-model"); 
 const createGroupRules = require("../middlewares/create-group-rules");
 const joinGroupRules = require("../middlewares/join-group-rules");
 const checkValidation = require("../../../shared/middlewares/check-validation");
@@ -41,6 +42,8 @@ router.post("/", authorize(["customer", "admin"]), createGroupRules, checkValida
       members: [ownerId],
     });
 
+      await UserModel.findByIdAndUpdate(ownerId, { $addToSet: { groups: group._id } });
+
     res.status(201).json(group);
   } catch (err) {
     console.error("Create group error:", err);
@@ -62,6 +65,9 @@ router.post("/join", authorize(["customer", "admin"]), joinGroupRules, checkVali
 
     group.members.push(userId);
     await group.save();
+
+
+    await UserModel.findByIdAndUpdate(userId, { $addToSet: { groups: group._id } });
 
     res.json({ message: "Joined group successfully", group });
   } catch (err) {

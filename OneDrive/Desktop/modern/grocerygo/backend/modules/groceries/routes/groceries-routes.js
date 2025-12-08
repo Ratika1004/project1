@@ -1,12 +1,13 @@
 const { Router } = require("express");
+const mongoose = require("mongoose");
 const GroceryModel = require("../models/groceries-model");
+const GroupModel = require("../../groups/models/group-model");
 const createGroceryRules = require("../middlewares/create-grocery-rules");
 const updateGroceryRules = require("../middlewares/update-grocery-rules");
 const checkValidation = require("../../../shared/middlewares/check-validation");
 const authorize = require("../../../shared/middlewares/authorize");
 
 const groceriesRoute = Router();
-
 
 groceriesRoute.get("/", authorize(["customer", "admin"]), async (req, res) => {
   try {
@@ -16,15 +17,11 @@ groceriesRoute.get("/", authorize(["customer", "admin"]), async (req, res) => {
     if (search) query.name = { $regex: search, $options: "i" };
     if (groupId) query.groupId = groupId;
 
-
     const user = req.account;
     const isAdmin = user.roles.includes("admin");
-    if (!isAdmin) {
-      if (groupId && !user.groups.includes(groupId)) {
-        return res.status(403).json({ message: "You are not a member of this group" });
-      } else if (!groupId) {
-        query.groupId = { $in: user.groups };
-      }
+
+    if (!isAdmin && !groupId) {
+      query.groupId = { $in: user.groups.map(g => String(g)) };
     }
 
     const count = await GroceryModel.countDocuments(query);
@@ -49,32 +46,37 @@ groceriesRoute.get("/:id", authorize(["customer", "admin"]), async (req, res) =>
     const user = req.account;
     const isAdmin = user.roles.includes("admin");
 
-    if (!isAdmin && !user.groups.includes(String(grocery.groupId))) {
+    if (!isAdmin && !user.groups.map(g => String(g)).includes(String(grocery.groupId))) {
       return res.status(403).json({ message: "You are not allowed to view this grocery" });
     }
 
     res.json(grocery);
   } catch (error) {
+    console.error("Get grocery by ID error:", error);
     res.status(400).json({ message: "Invalid ID format", error: error.message });
   }
 });
-
 
 groceriesRoute.post("/", authorize(["customer", "admin"]), createGroceryRules, checkValidation, async (req, res) => {
   try {
     const { name, quantity, groupId, isBought } = req.body;
     const user = req.account;
-    const isAdmin = user.roles.includes("admin");
+    const userId = user._id;
 
-    if (!isAdmin && !user.groups.includes(groupId)) {
-      return res.status(403).json({ message: "You are not a member of this group" });
-    }
+    const group = await GroupModel.findById(groupId);
+    if (!group) return res.status(404).json({ message: "Group not found" });
+
+    const isAdmin = user.roles.includes("admin");
+    const members = group.members.filter(m => m != null);
+    const isMember = members.map(m => String(m)).includes(String(userId));
+
+    if (!isAdmin && !isMember) return res.status(403).json({ message: "You are not a member of this group" });
 
     const newGrocery = await GroceryModel.create({
       name,
       quantity,
-      addedBy: user._id,
-      groupId,
+      addedBy: userId,
+      groupId, 
       isBought: !!isBought,
     });
 
@@ -91,10 +93,15 @@ groceriesRoute.put("/:id", authorize(["customer", "admin"]), updateGroceryRules,
     const grocery = await GroceryModel.findById(req.params.id);
     if (!grocery) return res.status(404).json({ message: "Grocery not found" });
 
-    const user = req.account;
-    const isAdmin = user.roles.includes("admin");
+    const userId = String(req.account._id);
+    const isAdmin = req.account.roles.includes("admin");
 
-    if (!isAdmin && !user.groups.includes(String(grocery.groupId))) {
+   
+    const group = await GroupModel.findById(grocery.groupId);
+    const members = group.members.filter(m => m != null).map(m => String(m));
+    const isMember = members.includes(userId);
+
+    if (!isAdmin && !isMember) {
       return res.status(403).json({ message: "You cannot update this grocery" });
     }
 
@@ -116,10 +123,15 @@ groceriesRoute.delete("/:id", authorize(["customer", "admin"]), async (req, res)
     const grocery = await GroceryModel.findById(req.params.id);
     if (!grocery) return res.status(404).json({ message: "Grocery not found" });
 
-    const user = req.account;
-    const isAdmin = user.roles.includes("admin");
+    const userId = String(req.account._id);
+    const isAdmin = req.account.roles.includes("admin");
 
-    if (!isAdmin && !user.groups.includes(String(grocery.groupId))) {
+    
+    const group = await GroupModel.findById(grocery.groupId);
+    const members = group.members.filter(m => m != null).map(m => String(m));
+    const isMember = members.includes(userId);
+
+    if (!isAdmin && !isMember) {
       return res.status(403).json({ message: "You cannot delete this grocery" });
     }
 

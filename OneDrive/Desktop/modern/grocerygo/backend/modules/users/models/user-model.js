@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { encodePassword } = require("../../../shared/password-utils");
 
+
 const userSchema = new mongoose.Schema(
   {
     name: { type: String },
@@ -9,21 +10,17 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     address: { type: String },
     roles: { type: [String], enum: ["admin", "customer"], default: ["customer"], required: true },
-    groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }], // user groups
+    groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }], 
     createdAt: { type: Date, default: Date.now },
   },
   { versionKey: false }
 );
 
-userSchema.pre("save", async function (next) {
-  try {
-    if (!this.isModified("password")) return next();
-    this.password = await encodePassword(this.password);
-    next();
-  } catch (err) {
-    next(err);
-  }
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await encodePassword(this.password);
 });
+
 
 const UserModel = mongoose.model("User", userSchema);
 
@@ -36,5 +33,6 @@ const getUserByID = async (id) => {
   }
 };
 
+UserModel.getUserByID = getUserByID;
 module.exports = UserModel;
-module.exports.getUserByID = getUserByID;
+
