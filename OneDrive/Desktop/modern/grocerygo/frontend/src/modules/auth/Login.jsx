@@ -30,7 +30,8 @@ export default function Login(){
   return (
     <div className="auth-wrap">
       <div className="card auth-card">
-        <h2 className="header">Login</h2>
+        <h1 className="header">Grocery GO  </h1>
+        <h2 className="header">Login  </h2>
         {notice && <div className={notice.type === "error" ? "error" : "success"}>{notice.text}</div>}
         <form onSubmit={handleSubmit}>
           <input className="input" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required />
@@ -41,7 +42,7 @@ export default function Login(){
           </div>
         </form>
       </div>
-      <p className="center small muted" style={{marginTop:12}}>We will send an OTP to your email to complete login.</p>
+      <p className="center small muted" style={{marginTop:12}}></p>
     </div>
   );
 }
