@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 
 const express = require("express");
@@ -12,7 +11,8 @@ const connectDB = require("./shared/middlewares/connect-db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+const HOST = process.env.HOSTNAME || "0.0.0.0";
+  
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,7 +20,6 @@ app.use(cors());
 
 // Connect to MongoDB
 app.use(connectDB);
-
 
 app.use("/groceries", groceriesRoute);
 app.use("/users", usersRoute);
@@ -39,6 +38,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server running at http://${HOST}:${PORT}`);
 });
